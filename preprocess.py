@@ -44,18 +44,23 @@ except Exception as e:
     print(f"Exception: {e}")
     exit()
 
-# Build vocabulary
+# Tokenize sentences to build vocabulary
 try:
-    tokenizer.build_vocab(sentences)
+    tokenized_inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True)
 except Exception as e:
-    print("Error: Failed to build vocabulary.")
+    print("Error: Failed to tokenize sentences.")
     print(f"Exception: {e}")
     exit()
+
+# Get the vocabulary from the tokenizer
+vocab = tokenizer.get_vocab()
 
 # Save vocabulary
 output_vocab_file = os.path.join(vocab_dir, "albert_vocab.txt")
 try:
-    tokenizer.save_vocabulary(output_vocab_file)
+    with open(output_vocab_file, "w", encoding="utf-8") as f:
+        for token, index in vocab.items():
+            f.write(f"{token}\t{index}\n")
     print(f"Vocabulary saved successfully to {output_vocab_file}.")
 except Exception as e:
     print("Error: Failed to save vocabulary.")
