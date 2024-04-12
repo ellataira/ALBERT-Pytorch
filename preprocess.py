@@ -18,7 +18,7 @@ import os
 vocab_dir = "/scratch/taira.e/"
 
 # Specify the tokenizer model identifier
-model_identifier = "albert-base-uncased"
+model_identifier = "albert-base-v2"
 
 # Initialize the tokenizer
 try:
