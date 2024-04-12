@@ -33,6 +33,7 @@ except Exception as e:
     exit()
 
 # Tokenize sentences to build vocabulary
+print("now tokenizing... ")
 try:
     tokenized_inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True)
 except Exception as e:
@@ -40,6 +41,9 @@ except Exception as e:
     print(f"Exception: {e}")
     exit()
 
+print("done tokenizing")
+
+print("getting vocab from tokenizer")
 # Get the vocabulary from the tokenizer
 vocab = tokenizer.get_vocab()
 
