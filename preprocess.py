@@ -59,7 +59,7 @@ vocab = tokenizer.get_vocab()
 output_vocab_file = os.path.join(vocab_dir, "albert_vocab.txt")
 try:
     with open(output_vocab_file, "w", encoding="utf-8") as f:
-        for token, index in vocab.items():
+        for token, index in tqdm(vocab.items(), desc="Saving vocabulary"):
             f.write(f"{token}\t{index}\n")
     print(f"Vocabulary saved successfully to {output_vocab_file}.")
 except Exception as e:
