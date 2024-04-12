@@ -22,7 +22,7 @@ python preprocess.py &
 prep_id=$!
 
 # Start continuous monitoring while the bert-vocab command is running
-while ps -p prep_id > /dev/null; do
+while ps -p $prep_id > /dev/null; do
    # Get timestamp
     timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 
