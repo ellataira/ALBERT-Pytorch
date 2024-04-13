@@ -46,13 +46,12 @@ def create_workspace(save_id):
 def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
     log("Loading c4 dataset.")
     c4 = datasets.load_dataset("allenai/c4", "en", split='train', streaming=True, cache_dir="../", download_config=datasets.DownloadConfig(cache_dir="../"))
-    # dataset = c4
 
     def read_first_n_documents(dataset, n):
-        documents = []
-        for example in dataset:
-            documents.append(example)
-            if len(documents) >= n:
+        documents = {}
+        for i, example in enumerate(dataset):
+            documents[i] = example
+            if i >= n - 1:
                 break
         return documents
 
@@ -73,6 +72,7 @@ def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
     dataset = dataset.train_test_split(test_size=test_split)
 
     return dataset
+
 
 """
     Load pretrained tokenizer
