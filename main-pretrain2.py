@@ -44,10 +44,9 @@ def create_workspace(save_id):
     5. Create train-test split
 """
 def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
-    log("Loading English Wikipedia dataset.")
-    wiki = datasets.load_dataset('wikipedia', '20220301.en', split='train[:1%]' if small else 'train')
-    wiki.remove_columns("title")
-    dataset = wiki
+    log("Loading c4 dataset.")
+    c4 = datasets.load_dataset("allenai/c4", "en", split='train[:110000]')
+    dataset = c4
 
     def _chunk_text(batch, chunk_size=2000):
         chunks = []
