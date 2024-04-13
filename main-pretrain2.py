@@ -48,9 +48,9 @@ def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
     c4 = datasets.load_dataset("allenai/c4", "en", split='train', streaming=True, cache_dir="../", download_config=datasets.DownloadConfig(cache_dir="../"))
 
     def read_first_n_documents(dataset, n):
-        documents = {}
+        documents = []
         for i, example in enumerate(dataset):
-            documents[i] = example
+            documents.append({'text': example['text']})
             if i >= n - 1:
                 break
         return documents
