@@ -43,32 +43,54 @@ def create_workspace(save_id):
     4. Filter shorter sequences
     5. Create train-test split
 """
+# def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
+#     log("Loading c4 dataset.")
+#     c4 = datasets.load_dataset("allenai/c4", "en", split='train', streaming=True, cache_dir="../", download_config=datasets.DownloadConfig(cache_dir="../"))
+#
+#     def read_first_n_documents(dataset, n):
+#         documents = []
+#         for i, example in enumerate(dataset):
+#             documents.append({'text': example['text']})
+#             if i >= n - 1:
+#                 break
+#         return documents
+#
+#     first_110k_documents = read_first_n_documents(c4, 110000)
+#     dataset = datasets.Dataset.from_dict(first_110k_documents)
+#
+#     def _chunk_text(batch, chunk_size=2000):
+#         chunks = []
+#         for s in batch['text']:
+#             chunks += [s[i:i+chunk_size] for i in range(0, len(s), chunk_size)]
+#         return {'chunks': chunks}
+#     log("Chunking text to maximum sequence_length")
+#     dataset = dataset.map(functools.partial(_chunk_text, chunk_size=chunk_size), batched=True, num_proc=cfg.nb_workers, remove_columns=dataset.column_names)
+#     log("Filtering short sequences")
+#     dataset = dataset.filter(lambda e: len(e['chunks']) >= chunk_size, num_proc=cfg.nb_workers)
+#
+#     log("Creating train-eval split")
+#     dataset = dataset.train_test_split(test_size=test_split)
+#
+#     return dataset
+
+
 def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
     log("Loading c4 dataset.")
     c4 = datasets.load_dataset("allenai/c4", "en", split='train', streaming=True, cache_dir="../", download_config=datasets.DownloadConfig(cache_dir="../"))
 
-    def read_first_n_documents(dataset, n):
-        documents = []
+    def _chunk_text(dataset, n, chunk_size=2000):
+        chunks = []
         for i, example in enumerate(dataset):
-            documents.append({'text': example['text']})
+            chunks.append({'chunks': [example['text'][j:j+chunk_size] for j in range(0, len(example['text']), chunk_size)]})
             if i >= n - 1:
                 break
-        return documents
+        return chunks
 
-    first_110k_documents = read_first_n_documents(c4, 110000)
-    dataset = datasets.Dataset.from_dict(first_110k_documents)
-
-    def _chunk_text(batch, chunk_size=2000):
-        chunks = []
-        for s in batch['text']:
-            chunks += [s[i:i+chunk_size] for i in range(0, len(s), chunk_size)]
-        return {'chunks': chunks}
     log("Chunking text to maximum sequence_length")
-    dataset = dataset.map(functools.partial(_chunk_text, chunk_size=chunk_size), batched=True, num_proc=cfg.nb_workers, remove_columns=dataset.column_names)
-    log("Filtering short sequences")
-    dataset = dataset.filter(lambda e: len(e['chunks']) >= chunk_size, num_proc=cfg.nb_workers)
+    chunks = _chunk_text(c4, 110000, chunk_size=chunk_size)
 
     log("Creating train-eval split")
+    dataset = datasets.Dataset.from_dict(chunks)
     dataset = dataset.train_test_split(test_size=test_split)
 
     return dataset
