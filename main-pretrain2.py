@@ -45,8 +45,19 @@ def create_workspace(save_id):
 """
 def load_dataset(tokenizer, small=False, chunk_size=2000, test_split=.1):
     log("Loading c4 dataset.")
-    c4 = datasets.load_dataset("allenai/c4", "en", split='train[:110000]')
-    dataset = c4
+    c4 = datasets.load_dataset("allenai/c4", "en", split='train', streaming=True, cache_dir="../", download_config=datasets.DownloadConfig(cache_dir="../"))
+    # dataset = c4
+
+    def read_first_n_documents(dataset, n):
+        documents = []
+        for example in dataset:
+            documents.append(example)
+            if len(documents) >= n:
+                break
+        return documents
+
+    first_110k_documents = read_first_n_documents(c4, 110000)
+    dataset = datasets.Dataset.from_dict(first_110k_documents)
 
     def _chunk_text(batch, chunk_size=2000):
         chunks = []
